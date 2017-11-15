@@ -76,6 +76,26 @@
                 </canvas>
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Protest Likelihood by Political Association</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="polprot-bar" style="width:50%">
+                    <!-- 50% width to fit -->
+                </canvas>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Protesters by Political Association</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="polprot-pie" style="width:50%">
+                    <!-- 50% width to fit -->
+                </canvas>
+            </div>
+        </div>
 
 
     </div>
@@ -223,7 +243,7 @@
          * ]
          * 
          * for more detail see `data/ChicMaroon2021.js`
-        */
+         */
         for (var i = 0; i < data.length; i++)
             switch (data[i][1]) {
                 case "Male":
@@ -264,6 +284,104 @@
                         }
                     }]
                 }
+            }
+        });
+
+        let PROTEST = 25 + 18;
+        let YES = 0;
+        let NO = 1;
+        let POLITICAL_IDENTITY = 9;
+        var protest = {
+            conservative: [0, 0],
+            liberal: [0, 0],
+            centrist: [0, 0]
+        }
+        for (var i = 0; i < data.length; i++)
+            switch (data[i][POLITICAL_IDENTITY]) {
+                case "More conservative":
+                    switch (data[i][PROTEST]) {
+                        case "Yes":
+                            protest.conservative[YES]++;
+                            break;
+                        case "No":
+                            protest.conservative[NO]++;
+                            break;
+                        default:
+                            break;
+                    }
+                case "More liberal":
+                    switch (data[i][PROTEST]) {
+                        case "Yes":
+                            protest.liberal[YES]++;
+                            break;
+                        case "No":
+                            protest.liberal[NO]++;
+                            break;
+                        default:
+                            break;
+                    }
+                case "About the same":
+                    switch (data[i][PROTEST]) {
+                        case "Yes":
+                            protest.centrist[YES]++;
+                            break;
+                        case "No":
+                            protest.centrist[NO]++;
+                            break;
+                        default:
+                            break;
+                    }
+            }
+        var polid_and_protest = new Chart($('#polprot-bar'), {
+            type: 'bar',
+            data: {
+                labels: ["Conservative", "Centrist", "Liberal"],
+                datasets: [{
+                    label: "Likely to protest",
+                    data: [protest.conservative[YES], protest.centrist[YES], protest.liberal[YES]],
+                    backgroundColor: [
+                        'darkred', // 0 red, 0 blue, 0 green, 40% opacity
+                        'seagreen', // 50 red, 50 blue, 50 green, 40% opacity
+                        'darkblue', //alternatively use a hex code
+                    ],
+                    borderColor: 'green',
+                    borderWidth: 2 //2 pixel border
+                }, {
+                    label: "Unlikely to protest",
+                    data: [protest.conservative[NO], protest.centrist[NO], protest.liberal[NO]],
+                    backgroundColor: [
+                        'pink', // 0 red, 0 blue, 0 green, 40% opacity
+                        'lightgreen', // 50 red, 50 blue, 50 green, 40% opacity
+                        'lightblue', //alternatively use a hex code
+                    ],
+                    borderColor: 'red',
+                    borderWidth: 2 //2 pixel border
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true // begin y axis at 0
+                        }
+                    }]
+                }
+            }
+        });
+        var protest_pie = new Chart($('#polprot-pie'), {
+            type: 'doughnut',
+            data: {
+                labels: ["Conservative", "Centrist", "Liberal"],
+                datasets: [{
+                    data: [protest.conservative[YES], protest.centrist[YES], protest.liberal[YES]],
+                    backgroundColor: [
+                        'lightcoral', // 0 red, 0 blue, 0 green, 40% opacity
+                        'lemonchiffon', // 50 red, 50 blue, 50 green, 40% opacity
+                        'lightseagreen', //alternatively use a hex code
+                    ],
+                    borderColor: 'steelblue',
+                    borderWidth: 2 //2 pixel border
+                }]
             }
         });
     </script>
