@@ -22,6 +22,8 @@
     <script src="http://netdna.bootstrapcdhttp:n.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <!-- ChartJS -->
     <script src="./js/Chart.bundle.min.js"></script>
+    <!-- Data -->
+    <script src="./data/ChicMaroon2021.js"></script>
 </head>
 
 <body>
@@ -29,7 +31,7 @@
     <div class="container">
 
         <div class="page-header">
-            <h1>Chart<small> (Boilerplate)</small></h1>
+            <h1>ChartJS<small> (Boilerplate)</small></h1>
         </div>
 
 
@@ -59,6 +61,17 @@
             </div>
             <div class="panel-body">
                 <canvas id="scatter-plot" style="width:50%">
+                    <!-- 50% width to fit -->
+                </canvas>
+            </div>
+        </div>
+        <!-- Using data from CSV/JSON -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Gender from CSV</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="gender-bar" style="width:50%">
                     <!-- 50% width to fit -->
                 </canvas>
             </div>
@@ -163,7 +176,8 @@
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var label = data.labels[tooltipItem.index]; // get the label from our labels array
-                            return label + ' | Harem Rating: ' + tooltipItem.xLabel + ', OP-ness:' + tooltipItem.yLabel + ')';
+                            return label + ' | Harem Rating: ' + tooltipItem.xLabel + ', OP-ness:' +
+                                tooltipItem.yLabel + ')';
                             // construct a string, Character | Harem Rating: #, OP-ness #, to be shown on hover
                         }
                     }
@@ -190,6 +204,63 @@
                         scaleLabel: {
                             display: true,
                             labelString: 'OP Rating of Respective Power'
+                        }
+                    }]
+                }
+            }
+        });
+
+        /* Using data from CSV/JSON */
+        var gender = [0, 0, 0]
+        let MALE = 0;
+        let FEMALE = 1;
+        let OTHER = 2;
+        /**
+         * Data format is an array of arrays of data:
+         * [
+         *  [timestamp, gender, race, orientation, ...],
+         *  ...
+         * ]
+         * 
+         * for more detail see `data/ChicMaroon2021.js`
+        */
+        for (var i = 0; i < data.length; i++)
+            switch (data[i][1]) {
+                case "Male":
+                    gender[MALE]++;
+                    break;
+                case "Female":
+                    gender[FEMALE]++;
+                    break;
+                default:
+                    gender[OTHER]++;
+                    break;
+            }
+        var barGraph = new Chart($('#gender-bar'), {
+            type: 'bar',
+            data: {
+                labels: ["Male", "Female", "Other"],
+                datasets: [{
+                    label: 'Gender of Respondents',
+                    data: gender,
+                    backgroundColor: [
+                        'blue', // 0 red, 0 blue, 0 green, 40% opacity
+                        'pink', // 50 red, 50 blue, 50 green, 40% opacity
+                        'coral', //alternatively use a hex code
+                    ],
+                    borderColor: [
+                        'rgba(0,0,0,0.2)', //full black border
+                        'rgba(0,0,0,0.2)',
+                        'rgba(0,0,0,0.2)',
+                    ],
+                    borderWidth: 2 //2 pixel border
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true // begin y axis at 0
                         }
                     }]
                 }
